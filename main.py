@@ -15,7 +15,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "cal:macro track/preloaded.csv"
+PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded.csv"
 TRACK_FILE_PATH = "cal:macro track/track.csv"
     
 class FoodApp:
@@ -118,7 +118,7 @@ class FoodApp:
         self.result_label.config(text="Food added successfully:\n" + str(food_item))
 
         self.intake_app.add_food_item(food_item)
-        self.intake_app.update_intake()
+        self.intake_app.update_progress()
 
     def record_food(self):
         name = self.name_entry.get()
@@ -178,6 +178,13 @@ class FoodApp:
 
         scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+
+        """
+        I have a certain cancer that I must eliminate from this program....
+        I suspect it has something to do with my self.recorded_foods......
+        I am tired....
+        """
 
         # Create a listbox to display the recorded foods
         recorded_food_listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set, width=50)
@@ -283,40 +290,17 @@ class DailyIntakeApp:
                     self.consumed_fats += float(row["Fats (g)"])
 
                     # Update the UI
-                    self.update_intake()
                     self.update_progress()
                     break  # Stop searching once today's data is found
 
-    def update_intake(self):
-        # This function kind of does nothing... I'll keep it around incase I want to bring back this intake_text feature...
-        """
-        self.intake_text.config(state="normal")  # Set state to normal before editing
-        self.intake_text.delete('1.0', tk.END)
-
-        # Display food items in the text widget
-        for food_item in self.food_items:
-            self.intake_text.insert(tk.END, food_item.display_simple() + "\n")
-
-        self.update_progress()
-
-        self.intake_text.config(state="disabled")  # Set state to disabled after editing
-        """
-        self.update_progress()
+    def add_food_item(self, food_item):
+        # Calculate consumed values
+        self.consumed_calories += food_item.cals
+        self.consumed_protein += food_item.prot
+        self.consumed_carbs += food_item.carb.total
+        self.consumed_fats += food_item.fat.total
 
     def update_progress(self):
-        """
-        Wow I never want to use matplotlib again...
-
-        This function sucks, I know it is slow and I am basically creating and deleting pie charts like they're
-        files in a directory. This makes my program significantly slower than it should be (especially considering
-        how many color settings I wanted) but I digress. I'm tired and it is friday night and I want to go play
-        mario party with my friends so I'm not going to fix this. NEXT FEATURE HERE WE GOOOOOO!!!!!!
-        """
-        # Calculate consumed values
-        self.consumed_calories += sum(food_item.cals for food_item in self.food_items)
-        self.consumed_protein += sum(food_item.prot for food_item in self.food_items)
-        self.consumed_carbs += sum(food_item.carb.total for food_item in self.food_items)
-        self.consumed_fats += sum(food_item.fat.total for food_item in self.food_items)
 
         # Fetch goals from entry fields
         calories_goal = float(self.calories_goal.get())
@@ -344,13 +328,14 @@ class DailyIntakeApp:
             for j in range(2):
                 index = 2 * i + j
                 ax = axs[i, j]
+                # print(consumed_values[index], goal_values[index])
                 if consumed_values[index] <= goal_values[index]:
                     ax.pie([consumed_values[index], goal_values[index] - consumed_values[index]],
-                        autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index], goal_values[index]]) / 100),
+                        autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index],  goal_values[index] - consumed_values[index]]) / 100),
                         startangle=90, colors=colors)
                     ax.set_title(categories[index], color='white')
                 else:
-                    ax.pie([1, 0], autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index], goal_values[index]]) / 100),
+                    ax.pie([1, 0], autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index], goal_values[index] - consumed_values[index]]) / 100),
                         startangle=90, colors=[colors[0], 'black'])
                     ax.set_title(categories[index], color='white')
 
@@ -368,11 +353,7 @@ class DailyIntakeApp:
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         plt.close(fig)  # Close the figure to prevent duplicate displays
-
-
-    def add_food_item(self, food_item):
-        self.food_items.append(food_item)
-        self.update_intake()
+        
 
     def track_intake(self):
         # Get today's date
