@@ -38,7 +38,7 @@ class Carbs():
         return str((self.total, self.fiber, self.sugars, self.added_sugars))
 
 class Food():
-    def __init__(self, name: str, cals: int , protein: float, carb: Carbs, fat: Fats, grams: float) -> None:
+    def __init__(self, name: str, cals: float , protein: float, carb: Carbs, fat: Fats, grams: float) -> None:
         """
         name - (str): food label, should contain brand and item name ("Tillamook, Cream Cheese")
         cals - (int): kilocalories on food label per 1 serving
@@ -79,7 +79,6 @@ def record_preloaded_food(food: Food, csvf: str) -> None:
         print("duplicate item")
         pass
 
-
 def load_preloaded_foods(csvf) -> list[Food]:
     with open(csvf, "r") as f:
         read_ob = csv.reader(f)
@@ -90,7 +89,7 @@ def load_preloaded_foods(csvf) -> list[Food]:
             loaded_foods.append(food)
 
         return loaded_foods
-
+"""
 def t():
     # This is a test.
     record_preloaded_food(Food("Daisy Cottage Cheese", 90, 13, Carbs(5, 0, 4, 0), Fats(2, 1.5, 0, 0), 113), CSV_FILE_PATH)
@@ -99,3 +98,4 @@ def t():
     print(new_food[0])
 
 # t()
+"""
