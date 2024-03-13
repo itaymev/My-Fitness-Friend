@@ -291,36 +291,41 @@ class DailyIntakeApp:
         with open(self.menu.user_track_file, "r") as file:
             reader = file.readlines()
             lines = len(reader)
-            for row_ind in range(len(reader)):
-                row = reader[row_ind].split(",") # This seperates the items in our row, otherwise it is one long string
-                if row[0] == today_date:
-                    # Load goals
-                    self.calories_goal.set(row[5])
-                    self.protein_goal.set(row[6])
-                    self.carbs_goal.set(row[7])
-                    self.fats_goal.set(row[8])
+            if lines == 1:
+                self.calories_goal.set(0)
+                self.protein_goal.set(0)
+                self.carbs_goal.set(0)
+                self.fats_goal.set(0)
+            else:
+                for row_ind in range(len(reader)):
+                    row = reader[row_ind].split(",") # This seperates the items in our row, otherwise it is one long string
+                    if row[0] == today_date:
+                        # Load goals
+                        self.calories_goal.set(row[5])
+                        self.protein_goal.set(row[6])
+                        self.carbs_goal.set(row[7])
+                        self.fats_goal.set(row[8])
 
-                    # Load consumed foods
-                    self.consumed_calories += float(row[1])
-                    self.consumed_protein += float(row[2])
-                    self.consumed_carbs += float(row[3])
-                    self.consumed_fats += float(row[4])
+                        # Load consumed foods
+                        self.consumed_calories += float(row[1])
+                        self.consumed_protein += float(row[2])
+                        self.consumed_carbs += float(row[3])
+                        self.consumed_fats += float(row[4])
 
-                    # Update the UI
-                    self.update_progress()
-                    break  # Stop searching once today's data is found
+                        # Update the UI
+                        self.update_progress()
+                        break  # Stop searching once today's data is found
 
-                elif row_ind == lines - 1:
-                    # Load goals
-                    self.calories_goal.set(row[5])
-                    self.protein_goal.set(row[6])
-                    self.carbs_goal.set(row[7])
-                    self.fats_goal.set(row[8])
+                    elif row_ind == lines - 1:
+                        # Load goals
+                        self.calories_goal.set(row[5])
+                        self.protein_goal.set(row[6])
+                        self.carbs_goal.set(row[7])
+                        self.fats_goal.set(row[8])
 
-                    # Update the UI
-                    self.update_progress()
-                    break  # Stop searching once today's data is found
-
+                        # Update the UI
+                        self.update_progress()
+                        break  # Stop searching once today's data is found
                 
 
     def add_food_item(self, food_item):
