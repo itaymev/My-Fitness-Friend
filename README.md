@@ -1,4 +1,4 @@
-# cal-macro-tracker
+# calorie-tracker
 A simple python application for tracking calories and macronutrients.
 
 # main.py
