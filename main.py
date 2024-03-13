@@ -98,7 +98,7 @@ class FoodApp:
 
     def add_food(self):
         name = self.name_entry.get()
-        cals = int(self.cals_entry.get())
+        cals = float(self.cals_entry.get())
         protein = float(self.protein_entry.get())
         carb = float(self.carbs_entry.get())
         fiber = float(self.fiber_entry.get())
@@ -122,7 +122,7 @@ class FoodApp:
 
     def record_food(self):
         name = self.name_entry.get()
-        cals = int(self.cals_entry.get())
+        cals = float(self.cals_entry.get())
         protein = float(self.protein_entry.get())
         carb = float(self.carbs_entry.get())
         fiber = float(self.fiber_entry.get())
@@ -164,10 +164,25 @@ class FoodApp:
         self.recorded_foods = []
         with open(PRELOADED_FILE_PATH, "r") as file:
             reader = csv.reader(file)
+            next(reader)  # Skip the header row
             for row in reader:
                 cals, grams, name, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono = row
-                self.recorded_foods.append((int(cals), float(grams), str(name), float(protein), float(carbs), float(fiber), float(total_sugar), float(added_sugar), float(fats), float(sat), float(trans), float(poly), float(mono)))
-
+                # Convert the appropriate fields to their respective types
+                cals = float(cals)
+                grams = float(grams)
+                protein = float(protein)
+                carbs = float(carbs)
+                fiber = float(fiber)
+                total_sugar = float(total_sugar)
+                added_sugar = float(added_sugar)
+                fats = float(fats)
+                sat = float(sat)
+                trans = float(trans)
+                poly = float(poly)
+                mono = float(mono)
+                # Append the converted data to recorded_foods
+                self.recorded_foods.append((cals, grams, name, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono))
+        
         # Create a new window to display the recorded foods
         recorded_food_window = tk.Toplevel(self.root)
         recorded_food_window.title("Recorded Foods")
@@ -269,29 +284,44 @@ class DailyIntakeApp:
         self.load_today_data()
 
     def load_today_data(self):
-        # Get today's date
-        today_date = dt.date.today().strftime("%Y-%m-%d")
+        # Get today's date as a string
+        today_date = str(dt.date.today().strftime("%Y-%m-%d"))
 
         # Check if today's date exists in the track.csv file
         with open(self.menu.user_track_file, "r") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if row['Date'] == today_date:
+            reader = file.readlines()
+            lines = len(reader)
+            for row_ind in range(len(reader)):
+                row = reader[row_ind].split(",") # This seperates the items in our row, otherwise it is one long string
+                if row[0] == today_date:
                     # Load goals
-                    self.calories_goal.set(row['Calories Goal'])
-                    self.protein_goal.set(row['Protein Goal'])
-                    self.carbs_goal.set(row['Carbs Goal'])
-                    self.fats_goal.set(row['Fats Goal'])
+                    self.calories_goal.set(row[5])
+                    self.protein_goal.set(row[6])
+                    self.carbs_goal.set(row[7])
+                    self.fats_goal.set(row[8])
 
                     # Load consumed foods
-                    self.consumed_calories += int(row["Calories (kcal)"])
-                    self.consumed_protein += float(row["Protein (g)"])
-                    self.consumed_carbs += float(row["Carbs (g)"])
-                    self.consumed_fats += float(row["Fats (g)"])
+                    self.consumed_calories += float(row[1])
+                    self.consumed_protein += float(row[2])
+                    self.consumed_carbs += float(row[3])
+                    self.consumed_fats += float(row[4])
 
                     # Update the UI
                     self.update_progress()
                     break  # Stop searching once today's data is found
+
+                elif row_ind == lines - 1:
+                    # Load goals
+                    self.calories_goal.set(row[5])
+                    self.protein_goal.set(row[6])
+                    self.carbs_goal.set(row[7])
+                    self.fats_goal.set(row[8])
+
+                    # Update the UI
+                    self.update_progress()
+                    break  # Stop searching once today's data is found
+
+                
 
     def add_food_item(self, food_item):
         # Calculate consumed values
