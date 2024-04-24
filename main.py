@@ -19,108 +19,287 @@ PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro 
 TRACK_FILE_PATH = "cal:macro track/track.csv"
     
 class FoodApp:
-    def __init__(self, root, intake_app):
+    def __init__(self, root, macro_intake_app, micro_intake_app):
         self.root = root
-        self.intake_app = intake_app
+        self.macro_intake_app = macro_intake_app
+        self.micro_intake_app = micro_intake_app
         self.recorded_foods = []  # Define recorded_foods as an attribute
+
+
         self.root.title("Calorie Tracker")
+        
+        width = 20
 
-        ttk.Label(root, text="Food Name, Brand:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.name_entry = ttk.Entry(root, width=27)
-        self.name_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        # -- Entry Boxes -- Coloumn 1 --
 
-        ttk.Label(root, text="Calories (kcal):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.cals_entry = ttk.Entry(root, width=27)
-        self.cals_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Serving Size (g/mL):").grid(row=0, column=0, padx=5, pady=5)
+        self.serving_size_entry = ttk.Entry(root, width=width)
+        self.serving_size_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Protein (g):").grid(row=2, column=0, padx=5, pady=5, sticky="w")
-        self.protein_entry = ttk.Entry(root, width=27)
-        self.protein_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Food Name, Brand:").grid(row=1, column=0, padx=5, pady=5)
+        self.name_entry = ttk.Entry(root, width=width)
+        self.name_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Carbohydrates (g):").grid(row=3, column=0, padx=5, pady=5, sticky="w")
-        self.carbs_entry = ttk.Entry(root, width=27)
-        self.carbs_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Calories (kcal):").grid(row=2, column=0, padx=5, pady=5)
+        self.cals_entry = ttk.Entry(root, width=width)
+        self.cals_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Fiber (g):").grid(row=4, column=0, padx=5, pady=5, sticky="w")
-        self.fiber_entry = ttk.Entry(root, width=27)
-        self.fiber_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Protein (g):").grid(row=3, column=0, padx=5, pady=5)
+        self.protein_entry = ttk.Entry(root, width=width)
+        self.protein_entry.grid(row=3, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Total Sugars (g):").grid(row=5, column=0, padx=5, pady=5, sticky="w")
-        self.sugars_entry = ttk.Entry(root, width=27)
-        self.sugars_entry.grid(row=5, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Carbohydrates (g):").grid(row=4, column=0, padx=5, pady=5)
+        self.carbs_entry = ttk.Entry(root, width=width)
+        self.carbs_entry.grid(row=4, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Added Sugars (g):").grid(row=6, column=0, padx=5, pady=5, sticky="w")
-        self.added_sugars_entry = ttk.Entry(root, width=27)
-        self.added_sugars_entry.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Fiber (g):").grid(row=5, column=0, padx=5, pady=5)
+        self.fiber_entry = ttk.Entry(root, width=width)
+        self.fiber_entry.grid(row=5, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Total Fats (g):").grid(row=7, column=0, padx=5, pady=5, sticky="w")
-        self.total_fats_entry = ttk.Entry(root, width=27)
-        self.total_fats_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Total Sugars (g):").grid(row=6, column=0, padx=5, pady=5)
+        self.sugars_entry = ttk.Entry(root, width=width)
+        self.sugars_entry.grid(row=6, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Saturated Fats (g):").grid(row=8, column=0, padx=5, pady=5, sticky="w")
-        self.saturated_fats_entry = ttk.Entry(root, width=27)
-        self.saturated_fats_entry.grid(row=8, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Added Sugars (g):").grid(row=7, column=0, padx=5, pady=5)
+        self.added_sugars_entry = ttk.Entry(root, width=width)
+        self.added_sugars_entry.grid(row=7, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Trans Fats (g):").grid(row=9, column=0, padx=5, pady=5, sticky="w")
-        self.trans_fats_entry = ttk.Entry(root, width=27)
-        self.trans_fats_entry.grid(row=9, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Total Fats (g):").grid(row=8, column=0, padx=5, pady=5)
+        self.total_fats_entry = ttk.Entry(root, width=width)
+        self.total_fats_entry.grid(row=8, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Polyunsaturated Fats (g):").grid(row=10, column=0, padx=5, pady=5, sticky="w")
-        self.polyunsaturated_fats_entry = ttk.Entry(root, width=27)
-        self.polyunsaturated_fats_entry.grid(row=10, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Saturated Fats (g):").grid(row=9, column=0, padx=5, pady=5)
+        self.saturated_fats_entry = ttk.Entry(root, width=width)
+        self.saturated_fats_entry.grid(row=9, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Monounsaturated Fats (g):").grid(row=11, column=0, padx=5, pady=5, sticky="w")
-        self.monounsaturated_fats_entry = ttk.Entry(root, width=27)
-        self.monounsaturated_fats_entry.grid(row=11, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Trans Fats (g):").grid(row=10, column=0, padx=5, pady=5)
+        self.trans_fats_entry = ttk.Entry(root, width=width)
+        self.trans_fats_entry.grid(row=10, column=1, padx=5, pady=5)
 
-        ttk.Label(root, text="Serving Size (g/mL):").grid(row=12, column=0, padx=5, pady=5, sticky="w")
-        self.serving_size_entry = ttk.Entry(root, width=27)
-        self.serving_size_entry.grid(row=12, column=1, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Polyunsaturated Fats (g):").grid(row=11, column=0, padx=5, pady=5)
+        self.polyunsaturated_fats_entry = ttk.Entry(root, width=width)
+        self.polyunsaturated_fats_entry.grid(row=11, column=1, padx=5, pady=5)
+
+        ttk.Label(root, text="Monounsaturated Fats (g):").grid(row=12, column=0, padx=5, pady=5)
+        self.monounsaturated_fats_entry = ttk.Entry(root, width=width)
+        self.monounsaturated_fats_entry.grid(row=12, column=1, padx=5, pady=5)
+
+        # -- Entry Boxes -- Coloumn 2 --
+#,
+        ttk.Label(root, text="Iron, Fe (mg):").grid(row=0, column=2, padx=5, pady=5)
+        self.iron_entry = ttk.Entry(root, width=width)
+        self.iron_entry.grid(row=0, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Zinc, Zn (mg):").grid(row=1, column=2, padx=5, pady=5)
+        self.zinc_entry = ttk.Entry(root, width=width)
+        self.zinc_entry.grid(row=1, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Calcium (mg):").grid(row=2, column=2, padx=5, pady=5)
+        self.calcium_entry = ttk.Entry(root, width=width)
+        self.calcium_entry.grid(row=2, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Magnesium (mg):").grid(row=3, column=2, padx=5, pady=5)
+        self.magnesium_entry = ttk.Entry(root, width=width)
+        self.magnesium_entry.grid(row=3, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Potassium, K (mg):").grid(row=4, column=2, padx=5, pady=5)
+        self.potassium_entry = ttk.Entry(root, width=width)
+        self.potassium_entry.grid(row=4, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Vitamin A, RAE (mcg):").grid(row=5, column=2, padx=5, pady=5)
+        self.vitA_entry = ttk.Entry(root, width=width)
+        self.vitA_entry.grid(row=5, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Vitamin B-12 (mcg):").grid(row=6, column=2, padx=5, pady=5)
+        self.vitB12_entry = ttk.Entry(root, width=width)
+        self.vitB12_entry.grid(row=6, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Vitamin C (mg):").grid(row=7, column=2, padx=5, pady=5)
+        self.vitC_entry = ttk.Entry(root, width=width)
+        self.vitC_entry.grid(row=7, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Vitamin D (mcg):").grid(row=8, column=2, padx=5, pady=5)
+        self.vitD_entry = ttk.Entry(root, width=width)
+        self.vitD_entry.grid(row=8, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Omega 3s (mg):").grid(row=9, column=2, padx=5, pady=5)
+        self.omega3_entry = ttk.Entry(root, width=width)
+        self.omega3_entry.grid(row=9, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Omega 6s (mg):").grid(row=10, column=2, padx=5, pady=5)
+        self.omega6_entry = ttk.Entry(root, width=width)
+        self.omega6_entry.grid(row=10, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Cholesterol (mg):").grid(row=11, column=2, padx=5, pady=5)
+        self.cholesterol_entry = ttk.Entry(root, width=width)
+        self.cholesterol_entry.grid(row=11, column=3, padx=5, pady=5)
+
+        ttk.Label(root, text="Sodium (mg):").grid(row=12, column=2, padx=5, pady=5)
+        self.sodium_entry = ttk.Entry(root, width=width)
+        self.sodium_entry.grid(row=12, column=3, padx=5, pady=5)
+
+        # -- BUTTONS --
 
         # Adds foods
-        add_button = ttk.Button(root, text="Add Food", command=self.add_food)
-        add_button.grid(row=13, column=0, padx=5, pady=5)
-        
+        add_button = ttk.Button(root, text="Add Food", width= width, command=self.add_food)
+        add_button.grid(row=13, column=0, padx=3, pady=5)
+
         # Clears text boxes
-        clear_button = ttk.Button(root, text="Clear", command=self.clear_entries)
-        clear_button.grid(row=13, column=1, columnspan=2, padx=5, pady=5)
+        clear_button = ttk.Button(root, text="Clear", width= width, command=self.clear_entries)
+        clear_button.grid(row=13, column=1, padx=3, pady=5)
 
+        # Opens the recorded foods window (hooray)
+        load_recorded_button = ttk.Button(root, text="Load Recorded Food", width= width, command=self.load_recorded_food)
+        load_recorded_button.grid(row=13, column=2, padx=0, pady=5)
+
+        # Adjusts Serving Size
+        serving_size_button = ttk.Button(root, text="Adjust Serving Size", width= width, command=self.adjust_serving_size)
+        serving_size_button.grid(row=13, column=3, padx=3, pady=5)
+
+        # Add a new button to show Daily Macronutrient Progress
+        self.show_progress_button = ttk.Button(root, text="Toggle Macronutrient Intake", width= width, command=self.macro_intake_app.toggle_visibility)
+        self.show_progress_button.grid(row=14, column=0, padx=3, pady=5)
+
+        # Add a new button to show Daily Micronutrient Progress
+        self.show_progress_button = ttk.Button(root, text="Toggle Micronutrient Intake", width= width, command=self.micro_intake_app.toggle_visibility)
+        self.show_progress_button.grid(row=14, column=1, padx=3, pady=5)
+
+        self.track_intake_button = ttk.Button(root, text="Track Today's Intake", width= width, command=self.track_intake)
+        self.track_intake_button.grid(row=14, column=2, padx=3, pady=5)
+
+        """
         # Initialize button for food loading and recording
-        goals_button = ttk.Button(root, text="Save Food to Records", command=self.record_food)
-        goals_button.grid(row=14, column=0, padx=0, pady=5)
+        goals_button = ttk.Button(root, text="Save New Food to Records", command=self.record_food)
+        goals_button.grid(row=4, column=2, padx=0, pady=5)
+        """
 
-        load_recorded_button = ttk.Button(root, text="Load Recorded Food", command=self.load_recorded_food)
-        load_recorded_button.grid(row=14, column=1, padx=0, pady=5)
-
+        """
         # Create and place result label
         self.result_label = ttk.Label(root, text="")
         self.result_label.grid(row=15, column=0, columnspan=2, padx=5, pady=5)
+        """
+
+    def track_intake(self):
+        # Forward the command over
+        self.macro_intake_app.track_intake()
+
+    def save_serving_size(self, new_serving_size: str):
+        try:            
+            new_serving_size = float(new_serving_size)
+            original_serving_size = float(self.serving_size_entry.get())
+
+            if original_serving_size <= 0:
+                raise ValueError("Original serving size must exist.")
+
+            ratio = new_serving_size / original_serving_size
+            self.serving_size_entry.delete(0, tk.END)
+            self.serving_size_entry.insert(0, str(new_serving_size))
+
+            # List of entry widgets to be scaled
+            entries_to_scale = [
+                self.cals_entry, self.protein_entry, self.carbs_entry,
+                self.fiber_entry, self.sugars_entry, self.added_sugars_entry,
+                self.total_fats_entry, self.saturated_fats_entry, self.trans_fats_entry,
+                self.polyunsaturated_fats_entry, self.monounsaturated_fats_entry
+            ]
+
+            for entry in entries_to_scale:
+                current_value = float(entry.get())
+                new_value = current_value * ratio
+                entry.delete(0, tk.END)
+                entry.insert(0, str(new_value))
+
+            return True  # Indicate success to on_save
+
+        except ValueError as e:
+            print("Error:", e)
+            return
+
+
+    def adjust_serving_size(self):
+        if self.name_entry.get() == "":
+            print("Please add food information")
+            return
+
+        adjust_serving_size_window = tk.Toplevel(self.root)
+        adjust_serving_size_window.title("Adjust Serving Size")
+
+        ttk.Label(adjust_serving_size_window, text="New Serving Size (g/mL):").grid(row=0, column=0, padx=0, pady=5)
+        new_serving_size_entry = ttk.Entry(adjust_serving_size_window, width=27)
+        new_serving_size_entry.grid(row=1, column=0, padx=0, pady=5)
+
+        def on_save():
+            if self.save_serving_size(new_serving_size_entry.get()):
+                adjust_serving_size_window.destroy()
+            else:
+                print("Failed to update serving size. Check input.")
+
+        save_serving_size_button = ttk.Button(adjust_serving_size_window, text="Save Serving Size", command=on_save)
+        save_serving_size_button.grid(row=2, column=0, padx=0, pady=5)
+
 
     def add_food(self):
+        if self.name_entry.get() == "":
+            print("Please add food information")
+            return
+
+        # Getting data to construct food object
         name = self.name_entry.get()
+        grams = float(self.serving_size_entry.get())
         cals = float(self.cals_entry.get())
         protein = float(self.protein_entry.get())
+        
+        # Getting data to construct carb object
         carb = float(self.carbs_entry.get())
         fiber = float(self.fiber_entry.get())
         sugars = float(self.sugars_entry.get())
         added_sugars = float(self.added_sugars_entry.get())
+        
+        carb = fc.Carbs(carb, fiber, sugars, added_sugars)
+        
+        # Getting data to construct fat object
         total_fats = float(self.total_fats_entry.get())
         saturated_fats = float(self.saturated_fats_entry.get())
         trans_fats = float(self.trans_fats_entry.get())
         polyunsaturated_fats = float(self.polyunsaturated_fats_entry.get())
         monounsaturated_fats = float(self.monounsaturated_fats_entry.get())
-        grams = float(self.serving_size_entry.get())
-
+        
         fat = fc.Fats(total_fats, saturated_fats, trans_fats, polyunsaturated_fats, monounsaturated_fats)
-        carb = fc.Carbs(carb, fiber, sugars, added_sugars)  # Not taking fiber, sugars, and added sugars as input currently
 
-        food_item = fc.Food(name, cals, protein, carb, fat, grams)
-        self.result_label.config(text="Food added successfully:\n" + str(food_item))
+        # Gretting data to construct micronutrient object
+        iron = float(self.iron_entry.get())
+        zinc = float(self.zinc_entry.get())
+        calcium = float(self.calcium_entry.get())
+        magnesium = float(self.magnesium_entry.get())
+        potassium = float(self.potassium_entry.get())
+        vitaminA = float(self.vitA_entry.get())
+        vitaminB12 = float(self.vitB12_entry.get())
+        vitaminC = float(self.vitC_entry.get())
+        vitaminD = float(self.vitD_entry.get())
+        omega3 = float(self.omega3_entry.get())
+        omega6 = float(self.omega6_entry.get())
+        cholesterol = float(self.cholesterol_entry.get())
+        sodium = float(self.sodium_entry.get())
 
-        self.intake_app.add_food_item(food_item)
-        self.intake_app.update_progress()
+        micro = fc.MicroNutrients(iron, zinc, calcium, magnesium, potassium, vitaminA, 
+                                  vitaminB12, vitaminC, vitaminD, omega3, omega6, cholesterol, sodium)
 
+        food_item = fc.Food(name, cals, grams, protein, carb, fat, micro)
+
+        # self.result_label.config(text="Food added successfully:\n" + str(food_item))
+
+        self.macro_intake_app.add_food_item(food_item)
+        self.macro_intake_app.update_progress()
+
+        self.micro_intake_app.add_food_item(food_item)
+        self.micro_intake_app.update_progress()
+
+    """
     def record_food(self):
+        if self.name_entry.get() == "":
+            print("Please add food information")
+            return
+
         name = self.name_entry.get()
         cals = float(self.cals_entry.get())
         protein = float(self.protein_entry.get())
@@ -138,11 +317,12 @@ class FoodApp:
         fat = fc.Fats(total_fats, saturated_fats, trans_fats, polyunsaturated_fats, monounsaturated_fats)
         carb = fc.Carbs(carb, fiber, sugars, added_sugars)  # Not taking fiber, sugars, and added sugars as input currently
 
-        food_item = fc.Food(name, cals, protein, carb, fat, grams)
-        self.result_label.config(text="Food loaded to records:\n" + str(food_item))
+        food_item = fc.Food(name, grams, cals, protein, carb, fat)
+        # self.result_label.config(text="Food loaded to records:\n" + str(food_item))
 
         fc.record_preloaded_food(food_item, PRELOADED_FILE_PATH)
-
+    """
+        
     def clear_entries(self):
         # Clear all text box entries
         self.name_entry.delete(0, tk.END)
@@ -166,7 +346,9 @@ class FoodApp:
             reader = csv.reader(file)
             next(reader)  # Skip the header row
             for row in reader:
-                cals, grams, name, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono = row
+                # print(row)
+                name, cals, grams, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono, iron, zinc, calcium, magnesium, potassium, vitaminA, vitaminB12, vitaminC, vitaminD, omega3, omega6, cholesterol, sodium = row
+
                 # Convert the appropriate fields to their respective types
                 cals = float(cals)
                 grams = float(grams)
@@ -180,41 +362,65 @@ class FoodApp:
                 trans = float(trans)
                 poly = float(poly)
                 mono = float(mono)
+                iron = float(iron)
+                zinc = float(zinc)
+                calcium = float(calcium)
+                magnesium = float(magnesium)
+                potassium = float(potassium)
+                vitaminA = float(vitaminA)
+                vitaminB12 = float(vitaminB12)
+                vitaminC = float(vitaminC)
+                vitaminD = float(vitaminD)
+                omega3 = float(omega3)
+                omega6 = float(omega6)
+                cholesterol = float(cholesterol)
+                sodium = float(sodium)
+
+
                 # Append the converted data to recorded_foods
-                self.recorded_foods.append((cals, grams, name, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono))
+                self.recorded_foods.append((cals, grams, name, protein, carbs, fiber, total_sugar, added_sugar, fats, sat, trans, poly, mono, iron, zinc, calcium, magnesium, potassium, vitaminA, vitaminB12, vitaminC, vitaminD, omega3, omega6, cholesterol, sodium))
         
-        # Create a new window to display the recorded foods
+        # New window to display the recorded foods
         recorded_food_window = tk.Toplevel(self.root)
         recorded_food_window.title("Recorded Foods")
 
-        # Create a frame with a vertical scrollbar
+        # Entry widget for the search bar
+        search_var = tk.StringVar()
+        search_entry = ttk.Entry(recorded_food_window, textvariable=search_var)
+        search_entry.pack(padx=5, pady=5, fill=tk.X)
+
+        # Frame with a vertical scrollbar
         frame = ttk.Frame(recorded_food_window)
         frame.pack(fill=tk.BOTH, expand=1)
 
         scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-
-        """
-        I have a certain cancer that I must eliminate from this program....
-        I suspect it has something to do with my self.recorded_foods......
-        I am tired....
-        """
-
-        # Create a listbox to display the recorded foods
+        # Listbox to display recorded foods
         recorded_food_listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set, width=50)
         for food in self.recorded_foods:
-            recorded_food_listbox.insert(tk.END, food[2])  # Display only the names of the recorded foods
+            recorded_food_listbox.insert(tk.END, food[2])  # Display only names of the foods
 
         recorded_food_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
         # Set the scrollbar to scroll the listbox
         scrollbar.config(command=recorded_food_listbox.yview)
 
-        # Double-click event handler to fill macronutrients and calories into FoodApp
-        recorded_food_listbox.bind("<Double-1>", lambda event: self.fill_food_entry(recorded_food_listbox, event))
+        # Function to update listbox based on search query
+        def update_listbox(event=None):
+            search_query = search_var.get().lower()
+            recorded_food_listbox.delete(0, tk.END)
+            for food in self.recorded_foods:
+                if search_query in food[2].lower():
+                    recorded_food_listbox.insert(tk.END, food[2])
 
-    def fill_food_entry(self, recorded_food_listbox, event):
+        # Bind the search function to the search bar's <<KeyRelease>> event
+        search_var.trace_add("write", lambda *args: update_listbox())
+
+        # Double-click event handler to fill macronutrients and calories into FoodApp
+        recorded_food_listbox.bind("<Double-1>", lambda event: self.fill_food_entry(recorded_food_listbox, recorded_food_window, event))
+
+    def fill_food_entry(self, recorded_food_listbox, recorded_food_window, event):
         # Clear any prior entries
         self.clear_entries()
 
@@ -226,8 +432,9 @@ class FoodApp:
             for food in self.recorded_foods:
                 if food[2] == selected_food:
                     # Fill the entry fields with the selected food's macronutrients and calories
-                    self.name_entry.insert(0, food[2])
                     self.cals_entry.insert(0, food[0])
+                    self.serving_size_entry.insert(0, food[1])
+                    self.name_entry.insert(0, food[2])
                     self.protein_entry.insert(0, food[3])
                     self.carbs_entry.insert(0, food[4])
                     self.fiber_entry.insert(0, food[5])
@@ -238,14 +445,29 @@ class FoodApp:
                     self.trans_fats_entry.insert(0, food[10])
                     self.polyunsaturated_fats_entry.insert(0, food[11])
                     self.monounsaturated_fats_entry.insert(0, food[12])
-                    self.serving_size_entry.insert(0, food[1])
+                    self.iron_entry.insert(0, food[13])
+                    self.zinc_entry.insert(0, food[14])
+                    self.calcium_entry.insert(0, food[15])
+                    self.magnesium_entry.insert(0, food[16])
+                    self.potassium_entry.insert(0, food[17])
+                    self.vitA_entry.insert(0, food[18])
+                    self.vitB12_entry.insert(0, food[19])
+                    self.vitC_entry.insert(0, food[20])
+                    self.vitD_entry.insert(0, food[21])
+                    self.omega3_entry.insert(0, food[22])
+                    self.omega6_entry.insert(0, food[23])
+                    self.cholesterol_entry.insert(0, food[24])
+                    self.sodium_entry.insert(0, food[25])
                     break
 
-class DailyIntakeApp:
+        recorded_food_window.destroy()
+
+class MacroIntakeApp:
     def __init__(self, root, menu):
         self.root = root
-        self.root.title("Daily Intake")
+        self.root.title("Macronutrient Intake")
         self.menu = menu
+        self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
 
         self.food_items = []
 
@@ -260,28 +482,37 @@ class DailyIntakeApp:
         self.carbs_goal = tk.StringVar()
         self.fats_goal = tk.StringVar()
 
-        ttk.Label(root, text="Calories Goal:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        ttk.Label(root, text="Protein Goal (g):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        ttk.Label(root, text="Carbs Goal (g):").grid(row=2, column=0, padx=5, pady=5, sticky="w")
-        ttk.Label(root, text="Fats Goal (g):").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        ttk.Label(root, text="Calories Goal:").grid(row=0, column=0, padx=5, pady=5)
+        ttk.Label(root, text="Protein Goal (g):").grid(row=1, column=0, padx=5, pady=5)
+        ttk.Label(root, text="Carbs Goal (g):").grid(row=2, column=0, padx=5, pady=5)
+        ttk.Label(root, text="Fats Goal (g):").grid(row=3, column=0, padx=5, pady=5)
 
-        ttk.Entry(root, textvariable=self.calories_goal, width=30).grid(row=0, column=1, padx=5, pady=5, sticky="w")
-        ttk.Entry(root, textvariable=self.protein_goal, width=30).grid(row=1, column=1, padx=5, pady=5, sticky="w")
-        ttk.Entry(root, textvariable=self.carbs_goal, width=30).grid(row=2, column=1, padx=5, pady=5, sticky="w")
-        ttk.Entry(root, textvariable=self.fats_goal, width=30).grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        ttk.Entry(root, textvariable=self.calories_goal, width=30).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Entry(root, textvariable=self.protein_goal, width=30).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Entry(root, textvariable=self.carbs_goal, width=30).grid(row=2, column=1, padx=5, pady=5)
+        ttk.Entry(root, textvariable=self.fats_goal, width=30).grid(row=3, column=1, padx=5, pady=5)
 
-        # Create a button to update progress
-        ttk.Button(root, text="Update Progress/Set Goals", command=self.update_progress).grid(row=4, column=0, padx=5, pady=5)
+        # Button to update progress
+        ttk.Button(root, text="Update Progress", command=self.update_progress).grid(row=4, column=1, padx=5, pady=5)
 
-        # Create a button to track today's intake
-        ttk.Button(root, text="Track Today's Intake", command=self.track_intake).grid(row=4, column=1, padx=5, pady=5)
+        # self.update_progress()  # Initial update to display the graphs
 
         # Create a frame to contain the pie charts
         self.progress_frame = ttk.Frame(root)
-        self.progress_frame.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky="w")
+        self.progress_frame.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
         # Load today's data if available
         self.load_today_data()
+
+    def hide_window(self):
+        self.root.withdraw()  # This hides the window instead of closing it
+
+    # Add a method to toggle visibility
+    def toggle_visibility(self):
+        if self.root.state() == 'withdrawn':
+            self.root.deiconify()  # Show the window if it is hidden
+        else:
+            self.root.withdraw()  # Hide the window otherwise
 
     def load_today_data(self):
         # Get today's date as a string
@@ -404,7 +635,7 @@ class DailyIntakeApp:
         # Prepare data for writing
         data = [today_date, self.consumed_calories, self.consumed_protein, self.consumed_carbs, self.consumed_fats, calories_goal, protein_goal, carbs_goal, fats_goal]
 
-        # We are assuming this file exists which might get problematic... (this feels like foreshadowing)
+        # We are assuming this file exists which might get problematic... (this feels like foreshadowing) (it was)
         rows_to_keep = []
         with open(self.menu.user_track_file, "r") as f:
             reader = csv.reader(f)
@@ -419,6 +650,92 @@ class DailyIntakeApp:
             writer.writerows(rows_to_keep)
             writer.writerow(data)
 
+class MicroIntakeApp:
+    def __init__(self, root, menu):
+        self.root = root
+        self.root.title("Micronutrient Intake")
+        self.menu = menu
+        self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
+
+
+        # Full set of micronutrients with example daily goals
+        self.micronutrients_consumed = {
+            'Iron': {'consumed': 0.0, 'goal': 18.0},  # mg/day for an average adult
+            'Zinc': {'consumed': 0.0, 'goal': 11.0},  # mg/day
+            'Calcium': {'consumed': 0.0, 'goal': 1000.0},  # mg/day
+            'Magnesium': {'consumed': 0.0, 'goal': 400.0},  # mg/day
+            'Potassium': {'consumed': 0.0, 'goal': 4700.0},  # mg/day
+            'Vitamin A': {'consumed': 0.0, 'goal': 900.0},  # mcg/day
+            'Vitamin B12': {'consumed': 0.0, 'goal': 2.4},  # mcg/day
+            'Vitamin C': {'consumed': 0.0, 'goal': 90.0},  # mg/day
+            'Vitamin D': {'consumed': 0.0, 'goal': 20.0},  # mcg/day
+            'Omega-3': {'consumed': 0.0, 'goal': 1600.0},  # mg/day
+            'Omega-6': {'consumed': 0.0, 'goal': 17000.0},  # mg/day
+            'Cholesterol': {'consumed': 0.0, 'goal': 300.0},  # mg/day
+            'Sodium': {'consumed': 0.0, 'goal': 2300.0}  # mg/day
+        }
+
+        # Create a frame for displaying the progress bars
+        self.progress_frame = ttk.Frame(root)
+        self.progress_frame.grid(row=1, column=0, columnspan=1, padx=5, pady=5, sticky="ew")
+
+        # Button to update progress
+        ttk.Button(root, text="Update Progress", command=self.update_progress).grid(row=0, column=0, padx=5, pady=5)
+
+        self.update_progress()  # Initial update to display the bars
+
+    def hide_window(self):
+        self.root.withdraw()  # This hides the window instead of closing it
+
+    # Add a method to toggle visibility
+    def toggle_visibility(self):
+        if self.root.state() == 'withdrawn':
+            self.root.deiconify()  # Show the window if it is hidden
+            self.update_progress()
+        else:
+            self.root.withdraw()  # Hide the window otherwise
+
+    def add_food_item(self, food):
+        self.micronutrients_consumed["Iron"]["consumed"] += food.micro.iron
+        self.micronutrients_consumed["Zinc"]["consumed"] += food.micro.zinc
+        self.micronutrients_consumed["Calcium"]["consumed"] += food.micro.calcium
+        self.micronutrients_consumed["Magnesium"]["consumed"] += food.micro.magnesium
+        self.micronutrients_consumed["Potassium"]["consumed"] += food.micro.potassium
+        self.micronutrients_consumed["Vitamin A"]["consumed"] += food.micro.vitaminA
+        self.micronutrients_consumed["Vitamin B12"]["consumed"] += food.micro.vitaminB12
+        self.micronutrients_consumed["Vitamin C"]["consumed"] += food.micro.vitaminC
+        self.micronutrients_consumed["Vitamin D"]["consumed"] += food.micro.vitaminD
+        self.micronutrients_consumed["Omega-3"]["consumed"] += food.micro.omega3
+        self.micronutrients_consumed["Omega-6"]["consumed"] += food.micro.omega6
+        self.micronutrients_consumed["Cholesterol"]["consumed"] += food.micro.cholesterol
+        self.micronutrients_consumed["Sodium"]["consumed"] += food.micro.sodium
+
+    def update_progress(self):
+        # Clear any existing widgets in the progress frame
+        for widget in self.progress_frame.winfo_children():
+            widget.destroy()
+
+        fig, ax = plt.subplots(figsize=(10, 8))  # Adjust size for better visibility
+        nutrients = list(self.micronutrients_consumed.keys())[::-1]
+        values = [(self.micronutrients_consumed[nutrient]['consumed']/self.micronutrients_consumed[nutrient]['goal']) for nutrient in nutrients]
+        goals = [self.micronutrients_consumed[nutrient]['goal'] for nutrient in nutrients]
+
+        # Creating the bar plot
+        ax.barh(nutrients, values, color='blue')
+        for i, (value, goal) in enumerate(zip(values, goals)):
+            ax.text(value, i, f' {value}/{goal}', va='center')
+
+        ax.set_xlabel('Amount Consumed vs. Daily Goal')
+        ax.set_title('Micronutrient Intake Progress')
+        plt.tight_layout()
+
+        # Embed the plot into the tkinter frame
+        canvas = FigureCanvasTkAgg(fig, master=self.progress_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        plt.close(fig)  # Close the figure to prevent duplicate displays
+
 
 class MainMenu:
     def __init__(self, root):
@@ -427,29 +744,29 @@ class MainMenu:
 
         # Create labels and entry boxes for username and password
         ttk.Label(root, text="Username:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        self.username_entry = ttk.Entry(root, width=30)
+        self.username_entry = ttk.Entry(root, width=15)
         self.username_entry.grid(row=0, column=1, padx=5, pady=5)
 
         ttk.Label(root, text="Password:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-        self.password_entry = ttk.Entry(root, show="*", width=30)  # Show '*' instead of actual password
+        self.password_entry = ttk.Entry(root, show="*", width=15)  # Show '*' instead of actual password
         self.password_entry.grid(row=1, column=1, padx=5, pady=5)
 
         # login button
-        ttk.Button(root, text="Login", command=self.login).grid(row=2, column=1, padx=5, pady=5, sticky="e")
+        ttk.Button(root, text="Login", command=self.login).grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
         # Create a User button
-        ttk.Button(root, text="Create User", command=self.create_user).grid(row=3, column=1, padx=5, pady=5, sticky="e")
+        ttk.Button(root, text="Create User", command=self.create_user).grid(row=1, column=2, padx=5, pady=5, sticky="e")
 
         # Text widget to display error messages
-        self.error_text = tk.Text(root, width=50, height=3, wrap=tk.WORD, state="disabled")
-        self.error_text.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        self.console_text = tk.Text(root, width=50, height=3, wrap=tk.WORD, state="disabled")
+        # self.console_text.grid(row=2, column=0, columnspan=2) # Uncomment this line to display console messages
 
     def update_error_message(self, message):
         # Enable the text widget, clear any existing text, set the new message, and disable the widget
-        self.error_text.config(state="normal")
-        self.error_text.delete(1.0, tk.END)
-        self.error_text.insert(tk.END, message)
-        self.error_text.config(state="disabled")
+        self.console_text.config(state="normal")
+        self.console_text.delete(1.0, tk.END)
+        self.console_text.insert(tk.END, message)
+        self.console_text.config(state="disabled")
 
     def login(self):
         # Get the entered username and password
@@ -473,12 +790,18 @@ class MainMenu:
                 # Close the main menu window
                 self.root.destroy()
 
-                # Open the FoodApp and DailyIntakeApp windows
+                 # Initialize the main FoodApp and IntakeApps
                 root_food = tk.Tk()
-                root_intake = tk.Toplevel(root_food)
+                root_macro_intake = tk.Toplevel(root_food)
+                root_micro_intake = tk.Toplevel(root_food)
 
-                daily_intake_app = DailyIntakeApp(root_intake, self)
-                food_app = FoodApp(root_food, daily_intake_app)
+                macro_intake_app = MacroIntakeApp(root_macro_intake, self)
+                micro_intake_app = MicroIntakeApp(root_micro_intake, self)
+                food_app = FoodApp(root_food, macro_intake_app, micro_intake_app)
+
+                # Minimize the intake windows on start
+                root_macro_intake.iconify()
+                root_micro_intake.iconify()
 
                 root_food.mainloop()
             else:
@@ -490,7 +813,7 @@ class MainMenu:
         root_food = tk.Tk()
         root_intake = tk.Toplevel(root_food)
 
-        daily_intake_app = DailyIntakeApp(root_intake)
+        daily_intake_app = MacroIntakeApp(root_intake)
         food_app = FoodApp(root_food, daily_intake_app)
 
         root_food.mainloop()
@@ -532,5 +855,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
