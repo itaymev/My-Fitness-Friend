@@ -15,7 +15,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded(micros).csv"
+PRELOADED_FILE_PATH = "preloaded.csv"
 TRACK_FILE_PATH = "cal:macro track/track.csv"
     
 class FoodApp:
