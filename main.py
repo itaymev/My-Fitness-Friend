@@ -338,6 +338,19 @@ class FoodApp:
         self.polyunsaturated_fats_entry.delete(0, tk.END)
         self.monounsaturated_fats_entry.delete(0, tk.END)
         self.serving_size_entry.delete(0, tk.END)
+        self.iron_entry.delete(0, tk.END)
+        self.zinc_entry.delete(0, tk.END)
+        self.calcium_entry.delete(0, tk.END)
+        self.magnesium_entry.delete(0, tk.END)
+        self.potassium_entry.delete(0, tk.END)
+        self.vitA_entry.delete(0, tk.END)
+        self.vitB12_entry.delete(0, tk.END)
+        self.vitC_entry.delete(0, tk.END)
+        self.vitD_entry.delete(0, tk.END)
+        self.omega3_entry.delete(0, tk.END)
+        self.omega6_entry.delete(0, tk.END)
+        self.cholesterol_entry.delete(0, tk.END)
+        self.sodium_entry.delete(0, tk.END)
 
     def load_recorded_food(self):
         # Read the recorded foods from the preloaded.csv file
@@ -701,14 +714,17 @@ class MicroIntakeApp:
         self.micronutrients_consumed["Calcium"]["consumed"] += food.micro.calcium
         self.micronutrients_consumed["Magnesium"]["consumed"] += food.micro.magnesium
         self.micronutrients_consumed["Potassium"]["consumed"] += food.micro.potassium
-        self.micronutrients_consumed["Vitamin A"]["consumed"] += food.micro.vitaminA
-        self.micronutrients_consumed["Vitamin B12"]["consumed"] += food.micro.vitaminB12
         self.micronutrients_consumed["Vitamin C"]["consumed"] += food.micro.vitaminC
-        self.micronutrients_consumed["Vitamin D"]["consumed"] += food.micro.vitaminD
         self.micronutrients_consumed["Omega-3"]["consumed"] += food.micro.omega3
         self.micronutrients_consumed["Omega-6"]["consumed"] += food.micro.omega6
         self.micronutrients_consumed["Cholesterol"]["consumed"] += food.micro.cholesterol
         self.micronutrients_consumed["Sodium"]["consumed"] += food.micro.sodium
+
+        # Convert mcg to mg for Vitamin A, Vitamin B12, and Vitamin D
+        self.micronutrients_consumed["Vitamin A"]["consumed"] += food.micro.vitaminA / 1000
+        self.micronutrients_consumed["Vitamin B12"]["consumed"] += food.micro.vitaminB12 / 1000
+        self.micronutrients_consumed["Vitamin D"]["consumed"] += food.micro.vitaminD / 1000
+
         # print(self.micronutrients_consumed)
         # self.update_progress()
 
