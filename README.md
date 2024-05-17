@@ -27,6 +27,7 @@ A file containing definitions for python classes that are used throughout the ap
         self.prot (float) - Grams of protein per serving in food
         self.carb (Carbs) - Grams of carbs per serving in food, broken down to total carbs, fiber, total sugars and added sugars
         self.fat (Fats) - Grams of fats per serving in food, broken down to total fats, saturated fats, trans fats, polyunsaturated fats and monounsaturated fats
+        self.micro (MicroNutrient) - Micronutrient value of food per seving, not displayed in Food.__str__ method
 
 # Carbs (class):
         self.total (float) - Total grams of carbs per serving in food
@@ -41,7 +42,7 @@ A file containing definitions for python classes that are used throughout the ap
         self.poly (float) - Grams of polyunsaturated fats per serving in food
         self.mono (float) - Grams of monounsaturated fats per serving in food
 
-# Micronutrients (class):
+# MicroNutrients (class):
         self.iron (float) - Milligrams of iron per serving in food
         self.zinc (float) - Milligrams of zinc per serving in food
         self.calcium (float) - Milligrams of calcium per serving in food
