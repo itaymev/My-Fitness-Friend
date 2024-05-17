@@ -15,7 +15,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded.csv"
+PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded(micros).csv"
 TRACK_FILE_PATH = "cal:macro track/track.csv"
     
 class FoodApp:
@@ -585,7 +585,7 @@ class MacroIntakeApp:
 
         # Plotting pie charts
         fig, axs = plt.subplots(2, 2, facecolor='#5A5A5B')
-        fig.suptitle('Daily Intake Progress')
+        fig.suptitle('Macronutrient Intake Progress', color="white")
 
         # Define color map for blue shades
         colors = plt.cm.Blues_r(np.linspace(0.2, 1, 3))
@@ -709,31 +709,47 @@ class MicroIntakeApp:
         self.micronutrients_consumed["Omega-6"]["consumed"] += food.micro.omega6
         self.micronutrients_consumed["Cholesterol"]["consumed"] += food.micro.cholesterol
         self.micronutrients_consumed["Sodium"]["consumed"] += food.micro.sodium
+        # print(self.micronutrients_consumed)
+        # self.update_progress()
 
     def update_progress(self):
         # Clear any existing widgets in the progress frame
         for widget in self.progress_frame.winfo_children():
             widget.destroy()
 
-        fig, ax = plt.subplots(figsize=(10, 8))  # Adjust size for better visibility
+        app_background_color = '#5A5A5B'
+
+        fig, ax = plt.subplots(figsize=(10, 8), facecolor=app_background_color)  # Adjust size for better visibility and set background color
         nutrients = list(self.micronutrients_consumed.keys())[::-1]
-        values = [(self.micronutrients_consumed[nutrient]['consumed']/self.micronutrients_consumed[nutrient]['goal']) for nutrient in nutrients]
-        goals = [self.micronutrients_consumed[nutrient]['goal'] for nutrient in nutrients]
+        consumed_values = [(self.micronutrients_consumed[nutrient]['consumed']) for nutrient in nutrients]
+        goal_values = [self.micronutrients_consumed[nutrient]['goal'] for nutrient in nutrients]
+        ratios = [min(consumed / goal, 1) if goal > 0 else 0 for consumed, goal in zip(consumed_values, goal_values)]
 
-        # Creating the bar plot
-        ax.barh(nutrients, values, color='blue')
-        for i, (value, goal) in enumerate(zip(values, goals)):
-            ax.text(value, i, f' {value}/{goal}', va='center')
+        colors = plt.cm.Blues_r(np.linspace(0.2, 1, len(nutrients)))
 
-        ax.set_xlabel('Amount Consumed vs. Daily Goal')
-        ax.set_title('Micronutrient Intake Progress')
+        # Creating the bar plot with proportional values
+        ax.barh(nutrients, ratios, color=colors)
+        for i, (ratio, consumed, goal) in enumerate(zip(ratios, consumed_values, goal_values)):
+            ax.text(1.05, i, f' {consumed:.2f}/{goal:.2f} mg', va='center', color='white') 
+
+        ax.set_xlabel('Proportion of Daily Goal', color='white')
+        ax.set_title('Micronutrient Intake Progress', color='white')
+        ax.set_xlim(0, 1)
+
+        # Customize background and text colors
+        ax.set_facecolor(app_background_color)
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.xaxis.label.set_color('white')
+        ax.title.set_color('white')
+
         plt.tight_layout()
 
         # Embed the plot into the tkinter frame
         canvas = FigureCanvasTkAgg(fig, master=self.progress_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
+        
         plt.close(fig)  # Close the figure to prevent duplicate displays
 
 
@@ -800,8 +816,8 @@ class MainMenu:
                 food_app = FoodApp(root_food, macro_intake_app, micro_intake_app)
 
                 # Minimize the intake windows on start
-                root_macro_intake.iconify()
-                root_micro_intake.iconify()
+                # root_macro_intake.iconify()
+                # root_micro_intake.iconify()
 
                 root_food.mainloop()
             else:
