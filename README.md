@@ -41,6 +41,21 @@ A file containing definitions for python classes that are used throughout the ap
         self.poly (float) - Grams of polyunsaturated fats per serving in food
         self.mono (float) - Grams of monounsaturated fats per serving in food
 
+# Micronutrients (class):
+        self.iron (float) - Milligrams of iron per serving in food
+        self.zinc (float) - Milligrams of zinc per serving in food
+        self.calcium (float) - Milligrams of calcium per serving in food
+        self.magnesium (float) - Milligrams of magnesium per serving in food
+        self.potassium (float) - Milligrams of potassium per serving in food
+        self.vitaminA (float) - Micrograms of vitamin A per serving in food (converted to mg in code)
+        self.vitaminB12 (float) - Micrograms of vitamin B12 per serving in food (converted to mg in code)
+        self.vitaminC (float) - Milligrams of vitamin C per serving in food
+        self.vitaminD (float) - Micrograms of vitamin D per serving in food (converted to mg in code)
+        self.omega3 (float) - Milligrams of omega 3 fatty acids per serving in food
+        self.omega6 (float) - Milligrams of omega 6 fatty acids per serving in food
+        self.cholesterol (float) - Milligrams of cholesterol per serving in food
+        self.sodium (float) - Milligrams of sodium per serving in food
+
 # preloaded.csv
 A csv file containing "preloaded" foods, by row. This file is directly edited and read by the main.py and food_class.py files. This enables features such as loading foods into the food app which is a massibe quality of life shortcut for the user.
 
