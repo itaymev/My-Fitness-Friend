@@ -1,4 +1,4 @@
-# calorie-tracker intructions for use
+# My Fitness Friend User Guide
 Place all files in the repository in a single directory. Python version 3.12 must be installed. The following packages for Python 3.12 must be installed aswell: tkinter, matplotlib, numpy, datetime, os, csv. Next, please edit the PRELOADED_FILE_PATH and TRACK_FILE_PATH global variables in main.py to match your relative path. And ensure the same for CSV_FILE_PATH in food_class.py, though it should just be a difference of directory name. Compile main.py with "python3.12 main.py" in a terminal and you will be prompted with the main menu.
 
 - Step 1: Create a profile, entering a username and password (both are case sensitive).
