@@ -4,7 +4,7 @@ Place all files in the repository in a single directory. Python version 3.12 mus
 - Step 1: Create a profile, entering a username and password (both are case sensitive).
 - Step 2: Once your profile is created, the textbox in the main menu will confirm the profile, and you are ready to log in.
 - Step 3: Your current macronutrient and calorie goals will all be set to 0, as you are a new user. Go ahead and set some goals and click "Update Progress/Set Goals" which will update the pie charts in the progress tab. You may track foods by selecting the "Load Recorded Foods" button and double-clicking your desired food, then clicking the "Add Food" button.
-- Step 4: After you've tracked some foods you may click the "Track Today's Intake" button. If you alreayd hit "Track Today's Intake" bu then end up tracking more food, there is no issue, as the program will seek entries with the same dates and overwrite the entry. Tracking via this feature allows the program to remember your goals for tomorrow.
+- Step 4: After you've tracked some foods you may click the "Track Today's Intake" button. If you already hit "Track Today's Intake" bu then end up tracking more food, there is no issue, as the program will seek entries with the same dates and overwrite the entry. Tracking via this feature allows the program to remember your goals for tomorrow.
 - Step 5: You can also add your own custom meals or foods by simply entering the name, calories, macronutrients, and serving size into the textboxes then clicking the "Save Food to Records".
 
 
@@ -15,7 +15,8 @@ Current Features:
 - One button clear food entries
 - Load foods that have been previously saved
 - Save foods to load in the future
-- Pie chart visual representation
+- Pie charts visual representation for macronutrients
+- Bar charts visual representation for micronutrients
 
 # food_class.py
 A file containing definitions for python classes that are used throughout the application.
