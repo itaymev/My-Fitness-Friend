@@ -16,7 +16,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded.csv"
+PRELOADED_FILE_PATH = "/preloaded.csv" # EDIT FILE PATH TO YOUR OWN FILE PATH
     
 class FoodApp:
     def __init__(self, root, macro_intake_app, micro_intake_app, progress_app):
