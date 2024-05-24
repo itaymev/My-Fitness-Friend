@@ -6,6 +6,7 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
+import pandas as pd
 
 # Imports for utility features
 import csv
@@ -15,20 +16,20 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "preloaded.csv"
-TRACK_FILE_PATH = "cal:macro track/track.csv"
+PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded.csv"
     
 class FoodApp:
-    def __init__(self, root, macro_intake_app, micro_intake_app):
+    def __init__(self, root, macro_intake_app, micro_intake_app, progress_app):
         self.root = root
         self.macro_intake_app = macro_intake_app
         self.micro_intake_app = micro_intake_app
+        self.progress_app = progress_app
         self.recorded_foods = []  # Define recorded_foods as an attribute
 
 
         self.root.title("Calorie Tracker")
         
-        width = 20
+        width = 15
 
         # -- Entry Boxes -- Coloumn 1 --
 
@@ -167,29 +168,20 @@ class FoodApp:
         self.track_intake_button = ttk.Button(root, text="Track Today's Intake", width= width, command=self.track_intake)
         self.track_intake_button.grid(row=14, column=2, padx=3, pady=5)
 
-        """
-        # Initialize button for food loading and recording
-        goals_button = ttk.Button(root, text="Save New Food to Records", command=self.record_food)
-        goals_button.grid(row=4, column=2, padx=0, pady=5)
-        """
-
-        """
-        # Create and place result label
-        self.result_label = ttk.Label(root, text="")
-        self.result_label.grid(row=15, column=0, columnspan=2, padx=5, pady=5)
-        """
+       
 
     def track_intake(self):
         # Forward the command over
         self.macro_intake_app.track_intake()
+        self.micro_intake_app.track_intake()
 
     def save_serving_size(self, new_serving_size: str):
         try:            
             new_serving_size = float(new_serving_size)
             original_serving_size = float(self.serving_size_entry.get())
 
-            if original_serving_size <= 0:
-                raise ValueError("Original serving size must exist.")
+            if original_serving_size < 0:
+                raise ValueError("Original serving size must not be negative.")
 
             ratio = new_serving_size / original_serving_size
             self.serving_size_entry.delete(0, tk.END)
@@ -200,7 +192,10 @@ class FoodApp:
                 self.cals_entry, self.protein_entry, self.carbs_entry,
                 self.fiber_entry, self.sugars_entry, self.added_sugars_entry,
                 self.total_fats_entry, self.saturated_fats_entry, self.trans_fats_entry,
-                self.polyunsaturated_fats_entry, self.monounsaturated_fats_entry
+                self.polyunsaturated_fats_entry, self.monounsaturated_fats_entry, self.iron_entry,
+                self.zinc_entry, self.calcium_entry, self.magnesium_entry, self.potassium_entry,
+                self.vitA_entry, self.vitB12_entry, self.vitC_entry, self.vitD_entry, self.omega3_entry,
+                self.omega6_entry, self.cholesterol_entry, self.sodium_entry
             ]
 
             for entry in entries_to_scale:
@@ -525,14 +520,14 @@ class MacroIntakeApp:
         if self.root.state() == 'withdrawn':
             self.root.deiconify()  # Show the window if it is hidden
         else:
-            self.root.withdraw()  # Hide the window otherwise
+            self.hide_window()  # Hide the window otherwise
 
     def load_today_data(self):
         # Get today's date as a string
         today_date = str(dt.date.today().strftime("%Y-%m-%d"))
 
         # Check if today's date exists in the track.csv file
-        with open(self.menu.user_track_file, "r") as file:
+        with open(self.menu.user_macro_track_file, "r") as file:
             reader = file.readlines()
             lines = len(reader)
             if lines == 1:
@@ -650,7 +645,7 @@ class MacroIntakeApp:
 
         # We are assuming this file exists which might get problematic... (this feels like foreshadowing) (it was)
         rows_to_keep = []
-        with open(self.menu.user_track_file, "r") as f:
+        with open(self.menu.user_macro_track_file, "r") as f:
             reader = csv.reader(f)
             for row in reader:
                 # Check if the date in the first column matches today's date
@@ -658,7 +653,7 @@ class MacroIntakeApp:
                     rows_to_keep.append(row)
 
         # Write data to track.csv
-        with open(self.menu.user_track_file, "w", newline="") as f:
+        with open(self.menu.user_macro_track_file, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(rows_to_keep)
             writer.writerow(data)
@@ -706,7 +701,7 @@ class MicroIntakeApp:
             self.root.deiconify()  # Show the window if it is hidden
             self.update_progress()
         else:
-            self.root.withdraw()  # Hide the window otherwise
+            self.hide_window()  # Hide the window otherwise
 
     def add_food_item(self, food):
         self.micronutrients_consumed["Iron"]["consumed"] += food.micro.iron
@@ -768,6 +763,136 @@ class MicroIntakeApp:
         
         plt.close(fig)  # Close the figure to prevent duplicate displays
 
+    def track_intake(self):
+        # Get today's date
+        today_date = dt.date.today().strftime("%Y-%m-%d")
+
+        data = [
+            today_date,
+            self.micronutrients_consumed["Iron"]["consumed"],
+            self.micronutrients_consumed["Zinc"]["consumed"],
+            self.micronutrients_consumed["Calcium"]["consumed"],
+            self.micronutrients_consumed["Magnesium"]["consumed"],
+            self.micronutrients_consumed["Potassium"]["consumed"],
+            self.micronutrients_consumed["Vitamin C"]["consumed"],
+            self.micronutrients_consumed["Omega-3"]["consumed"],
+            self.micronutrients_consumed["Omega-6"]["consumed"],
+            self.micronutrients_consumed["Cholesterol"]["consumed"],
+            self.micronutrients_consumed["Sodium"]["consumed"],
+            self.micronutrients_consumed["Vitamin A"]["consumed"],
+            self.micronutrients_consumed["Vitamin B12"]["consumed"],
+            self.micronutrients_consumed["Vitamin D"]["consumed"],
+            self.micronutrients_consumed["Iron"]["goal"],
+            self.micronutrients_consumed["Zinc"]["goal"],
+            self.micronutrients_consumed["Calcium"]["goal"],
+            self.micronutrients_consumed["Magnesium"]["goal"],
+            self.micronutrients_consumed["Potassium"]["goal"],
+            self.micronutrients_consumed["Vitamin C"]["goal"],
+            self.micronutrients_consumed["Omega-3"]["goal"],
+            self.micronutrients_consumed["Omega-6"]["goal"],
+            self.micronutrients_consumed["Cholesterol"]["goal"],
+            self.micronutrients_consumed["Sodium"]["goal"],
+            self.micronutrients_consumed["Vitamin A"]["goal"],
+            self.micronutrients_consumed["Vitamin B12"]["goal"],
+            self.micronutrients_consumed["Vitamin D"]["goal"]
+        ]
+
+        # We are assuming this file exists which might get problematic... (this feels like foreshadowing) (it was)
+        rows_to_keep = []
+        with open(self.menu.user_micro_track_file, "r") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                # Check if the date in the first column matches today's date
+                if row[0] != today_date:
+                    rows_to_keep.append(row)
+
+        # Write data to track.csv
+        with open(self.menu.user_micro_track_file, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerows(rows_to_keep)
+            writer.writerow(data)
+
+
+class ProgressApp:
+    def __init__(self, root, menu) -> None:
+        self.root = root
+        self.root.title("Weekly Progress")
+        self.menu = menu
+        self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
+
+        # Dropdown for time window selection
+        self.progress_window = tk.StringVar(value="1 week")
+        ttk.Label(root, text="Select Time Window:").grid(row=0, column=0, padx=5, pady=5)
+        ttk.OptionMenu(root, self.progress_window, "1 week", "3 days", "1 week", "2 weeks", "1 month", "1 year", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
+
+        # Dropdown for nutrient selection
+        self.nutrient_selection = tk.StringVar(value="Calories")
+        ttk.Label(root, text="Select Nutrient:").grid(row=1, column=0, padx=5, pady=5)
+        self.nutrient_options = ["Calories (kcal)", "Protein (g)", "Carbs (g)", "Fats (g)", "Iron (mg)", "Zinc (mg)", "Calcium (mg)", "Magnesium (mg)", "Potassium (mg)", "VitaminC (mg)", "Omega-3 (mg)", "Omega-6 (mg)", "Cholesterol (mg)", "Sodium (mg)", "VitaminA (mcg)", "VitaminB12 (mcg)", "VitaminD (mcg)"]
+        ttk.OptionMenu(root, self.nutrient_selection, *self.nutrient_options, command=self.update_progress).grid(row=1, column=1, padx=5, pady=5)
+
+        # Placeholder for the line graph
+        self.figure = plt.Figure(figsize=(8, 4), dpi=100)
+        self.ax = self.figure.add_subplot(111)
+        self.canvas = FigureCanvasTkAgg(self.figure, root)
+        self.canvas.get_tk_widget().grid(row=2, column=0, columnspan=2)
+
+        # Load data and initialize the graph
+        self.update_progress()
+
+    def hide_window(self):
+        self.root.withdraw()  # This hides the window instead of closing it
+
+    # Add a method to toggle visibility
+    def toggle_visibility(self):
+        if self.root.state() == 'withdrawn':
+            self.root.deiconify()  # Show the window if it is hidden
+        else:
+            self.hide_window()  # Hide the window otherwise
+
+    def update_progress(self, *args):
+        # Load data from macrotrack.csv and microtrack.csv
+        macro_data = pd.read_csv(self.menu.user_macro_track_file)
+        micro_data = pd.read_csv(self.menu.user_micro_track_file)
+        
+        # Combine the dataframes on the Date column
+        data = pd.merge(macro_data, micro_data, on="Date")
+
+        # Convert Date column to datetime
+        data["Date"] = pd.to_datetime(data["Date"])
+
+        # Filter data based on the selected time window
+        today = dt.date.today()
+        time_window = self.progress_window.get()
+        if time_window == "3 days":
+            start_date = today - dt.timedelta(days=3)
+        elif time_window == "1 week":
+            start_date = today - dt.timedelta(weeks=1)
+        elif time_window == "2 weeks":
+            start_date = today - dt.timedelta(weeks=2)
+        elif time_window == "1 month":
+            start_date = today - dt.timedelta(weeks=4)
+        elif time_window == "1 year":
+            start_date = today - dt.timedelta(weeks=52)
+        else:
+            start_date = today - dt.timedelta(weeks=1)  # Default to 1 week
+
+        start_date = pd.Timestamp(start_date)
+        filtered_data = data[data["Date"] >= start_date]
+        # print(data)
+
+        # Plot the selected nutrient
+        selected_nutrient = self.nutrient_selection.get()
+        self.ax.clear()
+        self.ax.plot(filtered_data["Date"], filtered_data[selected_nutrient], marker='o', linestyle='-')
+        self.ax.set_title(f'{selected_nutrient} Over Time')
+        self.ax.set_xlabel('Date')
+        self.ax.set_ylabel(selected_nutrient)
+        self.ax.grid(True)
+        self.figure.autofmt_xdate()
+        self.canvas.draw()
+
+
 
 class MainMenu:
     def __init__(self, root):
@@ -806,16 +931,18 @@ class MainMenu:
         password = self.password_entry.get()
 
         # Check if the user directory exists
-        self.user_directory = os.path.join("cal:macro track/users/", username)
+        self.user_directory = os.path.join("users/", username)
         if not os.path.exists(self.user_directory):
             self.update_error_message("Username does not exist")
             return
 
-        # Set csv file
-        self.user_track_file = os.path.join("cal:macro track/users/", f"{username}/track.csv")
+        # Set tracking files
+        self.user_macro_track_file = os.path.join("users/", f"{username}/macrotrack.csv")
+        self.user_micro_track_file = os.path.join("users/", f"{username}/microtrack.csv")
+
 
         # Check if the password matches the one stored in the user file
-        password_check = os.path.join("cal:macro track/users/", f"{username}/{username}.txt")
+        password_check = os.path.join("users/", f"{username}/{username}.txt")
         with open(password_check, "r") as file:
             stored_password = file.readline().strip()  # Read the stored password
             if password == stored_password:
@@ -826,10 +953,12 @@ class MainMenu:
                 root_food = tk.Tk()
                 root_macro_intake = tk.Toplevel(root_food)
                 root_micro_intake = tk.Toplevel(root_food)
+                root_prog_app = tk.Toplevel(root_food)
 
                 macro_intake_app = MacroIntakeApp(root_macro_intake, self)
                 micro_intake_app = MicroIntakeApp(root_micro_intake, self)
-                food_app = FoodApp(root_food, macro_intake_app, micro_intake_app)
+                progress_app = ProgressApp(root_prog_app, self)
+                food_app = FoodApp(root_food, macro_intake_app, micro_intake_app, progress_app)
 
                 # Minimize the intake windows on start
                 # root_macro_intake.iconify()
@@ -839,24 +968,17 @@ class MainMenu:
             else:
                 self.update_error_message("Wrong password")
 
-        """
-        self.root.destroy()
-
-        root_food = tk.Tk()
-        root_intake = tk.Toplevel(root_food)
-
-        daily_intake_app = MacroIntakeApp(root_intake)
-        food_app = FoodApp(root_food, daily_intake_app)
-
-        root_food.mainloop()
-        """
-
     def create_user(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
         # Check if the username already exists
-        user_directory = os.path.join("cal:macro track/users/", username)
+        user_directory = os.path.join("users", username)
+
+        self.user_macro_track_file = os.path.join(user_directory, "macrotrack.csv")
+        self.user_micro_track_file = os.path.join(user_directory, "microtrack.csv")
+        print(self.user_macro_track_file, self.user_micro_track_file)
+
 
         if os.path.exists(user_directory):
             self.update_error_message("Username already exists")
@@ -869,10 +991,14 @@ class MainMenu:
             file.write(password)
             self.update_error_message(f"User: {username} created")
 
+
         # Create the track.csv file in the user directory
-        user_track_file = os.path.join(user_directory, "track.csv")
-        with open(user_track_file, "w") as track_file:
+        with open(self.user_macro_track_file, mode="w", newline="") as track_file:
             track_file.write("Date,Calories (kcal),Protein (g),Carbs (g),Fats (g),Calories Goal,Protein Goal,Carbs Goal,Fats Goal\n")
+
+        with open(self.user_micro_track_file, mode="w", newline="") as track_file:
+            track_file.write("Date,Iron (mg),Zinc (mg),Calcium (mg),Magnesium (mg),Potassium (mg),VitaminC (mg),Omega-3 (mg),Omega-6 (mg),Cholesterol (mg),Sodium (mg),VitaminA (mcg),VitaminB12 (mcg), VitaminD (mcg),Iron Goal(mg),Zinc Goal(mg),Calcium Goal(mg),Magnesium Goal(mg),Potassium Goal(mg),VitaminC Goal(mg),Omega-3 Goal(mg),Omega-6 Goal(mg),Cholesterol Goal(mg),Sodium Goal(mg),VitaminA Goal(mcg),VitaminB12 Goal(mcg), VitaminD Goal(mcg)\n")
+
 
         # Clear username and password entries after user creation
         self.username_entry.delete(0, tk.END)
