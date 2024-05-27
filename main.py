@@ -16,7 +16,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "/preloaded.csv" # EDIT FILE PATH TO YOUR OWN FILE PATH
+PRELOADED_FILE_PATH = "/preloaded.csv" # CHANGE TO YOUR FILE PATH
     
 class FoodApp:
     def __init__(self, root, macro_intake_app, micro_intake_app, progress_app):
@@ -157,16 +157,21 @@ class FoodApp:
         serving_size_button = ttk.Button(root, text="Adjust Serving Size", width= width, command=self.adjust_serving_size)
         serving_size_button.grid(row=13, column=3, padx=3, pady=5)
 
-        # Add a new button to show Daily Macronutrient Progress
-        self.show_progress_button = ttk.Button(root, text="Toggle Macronutrient Intake", width= width, command=self.macro_intake_app.toggle_visibility)
+        # Show Daily Macronutrient Progress
+        self.show_progress_button = ttk.Button(root, text="Macronutrient Intake", width= width, command=self.macro_intake_app.toggle_visibility)
         self.show_progress_button.grid(row=14, column=0, padx=3, pady=5)
 
-        # Add a new button to show Daily Micronutrient Progress
-        self.show_progress_button = ttk.Button(root, text="Toggle Micronutrient Intake", width= width, command=self.micro_intake_app.toggle_visibility)
+        # Show Daily Micronutrient Progress
+        self.show_progress_button = ttk.Button(root, text="Micronutrient Intake", width= width, command=self.micro_intake_app.toggle_visibility)
         self.show_progress_button.grid(row=14, column=1, padx=3, pady=5)
 
-        self.track_intake_button = ttk.Button(root, text="Track Today's Intake", width= width, command=self.track_intake)
+        # Track intake
+        self.track_intake_button = ttk.Button(root, text="Track Intake", width= width, command=self.track_intake)
         self.track_intake_button.grid(row=14, column=2, padx=3, pady=5)
+
+        # Show Progress Tab
+        self.show_progress_button = ttk.Button(root, text="Progress Tab", width= width, command=self.progress_app.toggle_visibility)
+        self.show_progress_button.grid(row=14, column=3, padx=3, pady=5)
 
        
 
@@ -289,7 +294,11 @@ class FoodApp:
         self.micro_intake_app.add_food_item(food_item)
         self.micro_intake_app.update_progress()
 
+        self.progress_app.update_progress()
+
     """
+    wow legacy code!!!
+
     def record_food(self):
         if self.name_entry.get() == "":
             print("Please add food information")
@@ -473,7 +482,7 @@ class FoodApp:
 class MacroIntakeApp:
     def __init__(self, root, menu):
         self.root = root
-        self.root.title("Macronutrient Intake")
+        self.root.title("Macronutrient Tab")
         self.menu = menu
         self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
 
@@ -495,15 +504,26 @@ class MacroIntakeApp:
         ttk.Label(root, text="Carbs Goal (g):").grid(row=2, column=0, padx=5, pady=5)
         ttk.Label(root, text="Fats Goal (g):").grid(row=3, column=0, padx=5, pady=5)
 
-        ttk.Entry(root, textvariable=self.calories_goal, width=30).grid(row=0, column=1, padx=5, pady=5)
-        ttk.Entry(root, textvariable=self.protein_goal, width=30).grid(row=1, column=1, padx=5, pady=5)
-        ttk.Entry(root, textvariable=self.carbs_goal, width=30).grid(row=2, column=1, padx=5, pady=5)
-        ttk.Entry(root, textvariable=self.fats_goal, width=30).grid(row=3, column=1, padx=5, pady=5)
+        calories_entry = ttk.Entry(root, textvariable=self.calories_goal, width=30)
+        calories_entry.grid(row=0, column=1, padx=5, pady=5)
+        calories_entry.bind("<FocusOut>", lambda event: self.update_progress())
 
-        # Button to update progress
-        ttk.Button(root, text="Update Progress", command=self.update_progress).grid(row=4, column=1, padx=5, pady=5)
+        protein_entry = ttk.Entry(root, textvariable=self.protein_goal, width=30)
+        protein_entry.grid(row=1, column=1, padx=5, pady=5)
+        protein_entry.bind("<FocusOut>", lambda event: self.update_progress())
 
-        # self.update_progress()  # Initial update to display the graphs
+        carbs_entry = ttk.Entry(root, textvariable=self.carbs_goal, width=30)
+        carbs_entry.grid(row=2, column=1, padx=5, pady=5)
+        carbs_entry.bind("<FocusOut>", lambda event: self.update_progress())
+
+        fats_entry = ttk.Entry(root, textvariable=self.fats_goal, width=30)
+        fats_entry.grid(row=3, column=1, padx=5, pady=5)
+        fats_entry.bind("<FocusOut>", lambda event: self.update_progress())
+
+
+        # Button to update progress (no longer needed)
+        # ttk.Button(root, text="Update Window", command=self.update_progress).grid(row=4, column=1, padx=5, pady=5)
+
 
         # Create a frame to contain the pie charts
         self.progress_frame = ttk.Frame(root)
@@ -511,6 +531,8 @@ class MacroIntakeApp:
 
         # Load today's data if available
         self.load_today_data()
+        
+        self.update_progress()  # Initial update to display the graphs
 
     def hide_window(self):
         self.root.withdraw()  # This hides the window instead of closing it
@@ -574,7 +596,7 @@ class MacroIntakeApp:
         self.consumed_carbs += food_item.carb.total
         self.consumed_fats += food_item.fat.total
 
-    def update_progress(self):
+    def update_progress(self, event=None):
 
         # Fetch goals from entry fields
         calories_goal = float(self.calories_goal.get())
@@ -583,7 +605,7 @@ class MacroIntakeApp:
         fats_goal = float(self.fats_goal.get())
 
         # Prepare data for pie charts
-        categories = ['Calories', 'Protein', 'Carbs', 'Fats']
+        categories = ['Calories (g)', 'Protein (g)', 'Carbs (g)', 'Fats (g)']
         consumed_values = [self.consumed_calories, self.consumed_protein, self.consumed_carbs, self.consumed_fats]
         goal_values = [calories_goal, protein_goal, carbs_goal, fats_goal]
 
@@ -593,7 +615,7 @@ class MacroIntakeApp:
 
         # Plotting pie charts
         fig, axs = plt.subplots(2, 2, facecolor='#5A5A5B')
-        fig.suptitle('Macronutrient Intake Progress', color="white")
+        # fig.suptitle('Macronutrient Intake Progress', color="white")
 
         # Define color map for blue shades
         colors = plt.cm.Blues_r(np.linspace(0.2, 1, 3))
@@ -607,16 +629,16 @@ class MacroIntakeApp:
                     ax.pie([consumed_values[index], goal_values[index] - consumed_values[index]],
                         autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index],  goal_values[index] - consumed_values[index]]) / 100),
                         startangle=90, colors=colors)
-                    ax.set_title(categories[index], color='white')
                 else:
-                    ax.pie([1, 0], autopct=lambda p: '{:.0f}'.format(p * sum([consumed_values[index], goal_values[index] - consumed_values[index]]) / 100),
-                        startangle=90, colors=[colors[0], 'black'])
-                    ax.set_title(categories[index], color='white')
+                    ax.pie([consumed_values[index], 0], 
+                        autopct=lambda p: '{:.0f}'.format(p * sum([goal_values[index], consumed_values[index] - goal_values[index]]) / 100),
+                        startangle=90, colors=[colors[0], colors[1]])
+                ax.set_title(categories[index], color='white')
 
 
         # Customize subplot background color and text color
         for ax in axs.flat:
-            ax.set_facecolor('black')
+            ax.set_facecolor('#5A5A5B')
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
             ax.title.set_color('white')
@@ -661,9 +683,16 @@ class MacroIntakeApp:
 class MicroIntakeApp:
     def __init__(self, root, menu):
         self.root = root
-        self.root.title("Micronutrient Intake")
+        self.root.title("Micronutrient Tab")
         self.menu = menu
         self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
+
+        # Initialize the mode variable
+        self.mode = tk.StringVar(value= "Numeric")
+
+        # Create a dropdown menu for selecting the mode
+        ttk.Label(root, text="Display Mode:").grid(row=0, column=0, padx=5, pady=5)
+        ttk.OptionMenu(root, self.mode, "Numeric", "Percent", "Numeric", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
 
 
         # Full set of micronutrients with example daily goals
@@ -673,22 +702,24 @@ class MicroIntakeApp:
             'Calcium': {'consumed': 0.0, 'goal': 1000.0},  # mg/day
             'Magnesium': {'consumed': 0.0, 'goal': 400.0},  # mg/day
             'Potassium': {'consumed': 0.0, 'goal': 4700.0},  # mg/day
-            'Vitamin A': {'consumed': 0.0, 'goal': 900.0},  # mcg/day
-            'Vitamin B12': {'consumed': 0.0, 'goal': 2.4},  # mcg/day
             'Vitamin C': {'consumed': 0.0, 'goal': 90.0},  # mg/day
-            'Vitamin D': {'consumed': 0.0, 'goal': 20.0},  # mcg/day
             'Omega-3': {'consumed': 0.0, 'goal': 1600.0},  # mg/day
             'Omega-6': {'consumed': 0.0, 'goal': 17000.0},  # mg/day
             'Cholesterol': {'consumed': 0.0, 'goal': 300.0},  # mg/day
-            'Sodium': {'consumed': 0.0, 'goal': 2300.0}  # mg/day
+            'Sodium': {'consumed': 0.0, 'goal': 2300.0},  # mg/day
+            'Vitamin A': {'consumed': 0.0, 'goal': 900.0},  # mcg/day
+            'Vitamin B12': {'consumed': 0.0, 'goal': 2.4},  # mcg/day
+            'Vitamin D': {'consumed': 0.0, 'goal': 20.0}  # mcg/day
         }
 
         # Create a frame for displaying the progress bars
         self.progress_frame = ttk.Frame(root)
-        self.progress_frame.grid(row=1, column=0, columnspan=1, padx=5, pady=5, sticky="ew")
+        self.progress_frame.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
 
-        # Button to update progress
-        ttk.Button(root, text="Update Progress", command=self.update_progress).grid(row=0, column=0, padx=5, pady=5)
+        # Button to update progress (no longer needed)
+        # ttk.Button(root, text="Update Window", command=self.update_progress).grid(row=0, column=0, padx=5, pady=5)
+
+        self.load_today_data() # Load today's data if available
 
         self.update_progress()  # Initial update to display the bars
 
@@ -723,14 +754,35 @@ class MicroIntakeApp:
         # print(self.micronutrients_consumed)
         # self.update_progress()
 
-    def update_progress(self):
+
+    def load_today_data(self):
+        # Get today's date as a string
+        today_date = dt.date.today().strftime("%Y-%m-%d")
+
+        # Check if today's date exists in the microtrack.csv file
+        with open(self.menu.user_micro_track_file, "r") as file:
+            reader = csv.reader(file)
+            for row in reader:
+                # print(row[0] == today_date)
+                if row[0] == today_date:
+                    ind = 1
+                    for nutrient in self.micronutrients_consumed:
+                        # print(nutrient, float(row[ind]))
+                        self.micronutrients_consumed[nutrient]['consumed'] = float(row[ind])
+                        ind += 1
+                    # Update the UI
+                    self.update_progress()
+                    break
+
+
+    def update_progress(self, event=None):
         # Clear any existing widgets in the progress frame
         for widget in self.progress_frame.winfo_children():
             widget.destroy()
 
         app_background_color = '#5A5A5B'
 
-        fig, ax = plt.subplots(figsize=(10, 8), facecolor=app_background_color)  # Adjust size for better visibility and set background color
+        fig, ax = plt.subplots(figsize=(8, 6), facecolor=app_background_color)  # Adjust size for better visibility and set background color
         nutrients = list(self.micronutrients_consumed.keys())[::-1]
         consumed_values = [(self.micronutrients_consumed[nutrient]['consumed']) for nutrient in nutrients]
         goal_values = [self.micronutrients_consumed[nutrient]['goal'] for nutrient in nutrients]
@@ -739,12 +791,20 @@ class MicroIntakeApp:
         colors = plt.cm.Blues_r(np.linspace(0.2, 1, len(nutrients)))
 
         # Creating the bar plot with proportional values
-        ax.barh(nutrients, ratios, color=colors)
-        for i, (ratio, consumed, goal) in enumerate(zip(ratios, consumed_values, goal_values)):
-            ax.text(1.05, i, f' {consumed:.2f}/{goal:.2f} mg', va='center', color='white') 
+        bars = ax.barh(nutrients, ratios, color=colors)
+        for bar, ratio, consumed, goal in zip(bars, ratios, consumed_values, goal_values):
+            if ratio > 0.0099:
+                width = bar.get_width()
+                text = ""
+                if self.mode.get() == "Numeric":
+                    # text = f'{consumed:.2f}/{goal:.2f} mg' # This is if I want to display goals...
+                    text = f'{consumed:.2f}mg'
+                if self.mode.get() == "Percent":
+                    text = f'{(consumed/goal)*100:.1f}%'
+                ax.text(width / 2, bar.get_y() + bar.get_height() / 2, text, ha='center', va='center', color='black')
 
-        ax.set_xlabel('Proportion of Daily Goal', color='white')
-        ax.set_title('Micronutrient Intake Progress', color='white')
+        # ax.set_xlabel('Proportion of Daily Goal', color='white')
+        # ax.set_title('Micronutrient Intake Progress', color='white')
         ax.set_xlim(0, 1)
 
         # Customize background and text colors
@@ -754,7 +814,7 @@ class MicroIntakeApp:
         ax.xaxis.label.set_color('white')
         ax.title.set_color('white')
 
-        plt.tight_layout()
+        plt.tight_layout(pad = 0.9)
 
         # Embed the plot into the tkinter frame
         canvas = FigureCanvasTkAgg(fig, master=self.progress_frame)
@@ -816,14 +876,14 @@ class MicroIntakeApp:
 class ProgressApp:
     def __init__(self, root, menu) -> None:
         self.root = root
-        self.root.title("Weekly Progress")
+        self.root.title("Progress Tab")
         self.menu = menu
         self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
 
         # Dropdown for time window selection
         self.progress_window = tk.StringVar(value="1 week")
         ttk.Label(root, text="Select Time Window:").grid(row=0, column=0, padx=5, pady=5)
-        ttk.OptionMenu(root, self.progress_window, "1 week", "3 days", "1 week", "2 weeks", "1 month", "1 year", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
+        ttk.OptionMenu(root, self.progress_window, "1 week", "1 day", "3 days", "1 week", "2 weeks", "1 month", "6 months", "1 year", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
 
         # Dropdown for nutrient selection
         self.nutrient_selection = tk.StringVar(value="Calories")
@@ -831,8 +891,9 @@ class ProgressApp:
         self.nutrient_options = ["Calories (kcal)", "Protein (g)", "Carbs (g)", "Fats (g)", "Iron (mg)", "Zinc (mg)", "Calcium (mg)", "Magnesium (mg)", "Potassium (mg)", "VitaminC (mg)", "Omega-3 (mg)", "Omega-6 (mg)", "Cholesterol (mg)", "Sodium (mg)", "VitaminA (mcg)", "VitaminB12 (mcg)", "VitaminD (mcg)"]
         ttk.OptionMenu(root, self.nutrient_selection, *self.nutrient_options, command=self.update_progress).grid(row=1, column=1, padx=5, pady=5)
 
+        self.app_background_color = '#5A5A5B'
         # Placeholder for the line graph
-        self.figure = plt.Figure(figsize=(8, 4), dpi=100)
+        self.figure = plt.Figure(figsize=(8, 4), facecolor=self.app_background_color, dpi=100)
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, root)
         self.canvas.get_tk_widget().grid(row=2, column=0, columnspan=2)
@@ -864,7 +925,9 @@ class ProgressApp:
         # Filter data based on the selected time window
         today = dt.date.today()
         time_window = self.progress_window.get()
-        if time_window == "3 days":
+        if time_window == "1 day":
+            start_date = today - dt.timedelta(days=1)
+        elif time_window == "3 days":
             start_date = today - dt.timedelta(days=3)
         elif time_window == "1 week":
             start_date = today - dt.timedelta(weeks=1)
@@ -872,23 +935,31 @@ class ProgressApp:
             start_date = today - dt.timedelta(weeks=2)
         elif time_window == "1 month":
             start_date = today - dt.timedelta(weeks=4)
+        elif time_window == "6 months":
+            start_date = today - dt.timedelta(weeks=26)
         elif time_window == "1 year":
             start_date = today - dt.timedelta(weeks=52)
         else:
             start_date = today - dt.timedelta(weeks=1)  # Default to 1 week
 
         start_date = pd.Timestamp(start_date)
+        #print(data[data["Date"] >= start_date])
         filtered_data = data[data["Date"] >= start_date]
-        # print(data)
 
         # Plot the selected nutrient
         selected_nutrient = self.nutrient_selection.get()
         self.ax.clear()
         self.ax.plot(filtered_data["Date"], filtered_data[selected_nutrient], marker='o', linestyle='-')
-        self.ax.set_title(f'{selected_nutrient} Over Time')
-        self.ax.set_xlabel('Date')
-        self.ax.set_ylabel(selected_nutrient)
+        self.ax.set_title(f'{selected_nutrient} over the last {time_window}', color='white')
+        self.ax.set_xlabel('Date', color='white')
+        self.ax.set_ylabel(selected_nutrient, color='white')
+        self.ax.set_facecolor(self.app_background_color)
         self.ax.grid(True)
+
+        # Set tick label colors to white
+        self.ax.tick_params(axis='x', colors='white')
+        self.ax.tick_params(axis='y', colors='white')
+
         self.figure.autofmt_xdate()
         self.canvas.draw()
 
@@ -977,7 +1048,7 @@ class MainMenu:
 
         self.user_macro_track_file = os.path.join(user_directory, "macrotrack.csv")
         self.user_micro_track_file = os.path.join(user_directory, "microtrack.csv")
-        print(self.user_macro_track_file, self.user_micro_track_file)
+        # print(self.user_macro_track_file, self.user_micro_track_file)
 
 
         if os.path.exists(user_directory):
