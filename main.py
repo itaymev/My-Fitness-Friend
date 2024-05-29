@@ -16,7 +16,7 @@ import os
 # Imports for data classes
 import food_class as fc
 
-PRELOADED_FILE_PATH = "/preloaded.csv" # CHANGE TO YOUR FILE PATH
+PRELOADED_FILE_PATH = "/Users/itaymevorach/Documents/personal project/cal:macro track/preloaded.csv"
     
 class FoodApp:
     def __init__(self, root, macro_intake_app, micro_intake_app, progress_app):
@@ -27,7 +27,7 @@ class FoodApp:
         self.recorded_foods = []  # Define recorded_foods as an attribute
 
 
-        self.root.title("Calorie Tracker")
+        self.root.title("My Fitness Friend")
         
         width = 15
 
@@ -150,7 +150,7 @@ class FoodApp:
         clear_button.grid(row=13, column=1, padx=3, pady=5)
 
         # Opens the recorded foods window (hooray)
-        load_recorded_button = ttk.Button(root, text="Load Recorded Food", width= width, command=self.load_recorded_food)
+        load_recorded_button = ttk.Button(root, text="Select Food", width= width, command=self.load_recorded_food)
         load_recorded_button.grid(row=13, column=2, padx=0, pady=5)
 
         # Adjusts Serving Size
@@ -158,20 +158,20 @@ class FoodApp:
         serving_size_button.grid(row=13, column=3, padx=3, pady=5)
 
         # Show Daily Macronutrient Progress
-        self.show_progress_button = ttk.Button(root, text="Macronutrient Intake", width= width, command=self.macro_intake_app.toggle_visibility)
+        self.show_progress_button = ttk.Button(root, text="Macronutrient Tab", width= width, command=self.macro_intake_app.toggle_visibility)
         self.show_progress_button.grid(row=14, column=0, padx=3, pady=5)
 
         # Show Daily Micronutrient Progress
-        self.show_progress_button = ttk.Button(root, text="Micronutrient Intake", width= width, command=self.micro_intake_app.toggle_visibility)
+        self.show_progress_button = ttk.Button(root, text="Micronutrient Tab", width= width, command=self.micro_intake_app.toggle_visibility)
         self.show_progress_button.grid(row=14, column=1, padx=3, pady=5)
-
-        # Track intake
-        self.track_intake_button = ttk.Button(root, text="Track Intake", width= width, command=self.track_intake)
-        self.track_intake_button.grid(row=14, column=2, padx=3, pady=5)
 
         # Show Progress Tab
         self.show_progress_button = ttk.Button(root, text="Progress Tab", width= width, command=self.progress_app.toggle_visibility)
-        self.show_progress_button.grid(row=14, column=3, padx=3, pady=5)
+        self.show_progress_button.grid(row=14, column=2, padx=3, pady=5)
+
+        # Track intake
+        self.track_intake_button = ttk.Button(root, text="Track Intake", width= width, command=self.track_intake)
+        self.track_intake_button.grid(row=14, column=3, padx=3, pady=5)
 
        
 
@@ -179,6 +179,7 @@ class FoodApp:
         # Forward the command over
         self.macro_intake_app.track_intake()
         self.micro_intake_app.track_intake()
+        self.progress_app.update_progress()
 
     def save_serving_size(self, new_serving_size: str):
         try:            
@@ -872,7 +873,6 @@ class MicroIntakeApp:
             writer.writerows(rows_to_keep)
             writer.writerow(data)
 
-
 class ProgressApp:
     def __init__(self, root, menu) -> None:
         self.root = root
@@ -883,7 +883,7 @@ class ProgressApp:
         # Dropdown for time window selection
         self.progress_window = tk.StringVar(value="1 week")
         ttk.Label(root, text="Select Time Window:").grid(row=0, column=0, padx=5, pady=5)
-        ttk.OptionMenu(root, self.progress_window, "1 week", "1 day", "3 days", "1 week", "2 weeks", "1 month", "6 months", "1 year", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
+        ttk.OptionMenu(root, self.progress_window, "1 week", "3 days", "1 week", "2 weeks", "1 month", "6 months", "1 year", command=self.update_progress).grid(row=0, column=1, padx=5, pady=5)
 
         # Dropdown for nutrient selection
         self.nutrient_selection = tk.StringVar(value="Calories")
@@ -925,10 +925,8 @@ class ProgressApp:
         # Filter data based on the selected time window
         today = dt.date.today()
         time_window = self.progress_window.get()
-        if time_window == "1 day":
-            start_date = today - dt.timedelta(days=1)
-        elif time_window == "3 days":
-            start_date = today - dt.timedelta(days=3)
+        if time_window == "3 days":
+            start_date = today - dt.timedelta(hours=72)
         elif time_window == "1 week":
             start_date = today - dt.timedelta(weeks=1)
         elif time_window == "2 weeks":
@@ -968,7 +966,7 @@ class ProgressApp:
 class MainMenu:
     def __init__(self, root):
         self.root = root
-        self.root.title("Main Menu")
+        self.root.title("My Fitness Friend")
 
         # Create labels and entry boxes for username and password
         ttk.Label(root, text="Username:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
@@ -987,7 +985,7 @@ class MainMenu:
 
         # Text widget to display error messages
         self.console_text = tk.Text(root, width=50, height=3, wrap=tk.WORD, state="disabled")
-        # self.console_text.grid(row=2, column=0, columnspan=2) # Uncomment this line to display console messages
+        self.console_text.grid(row=2, column=0, columnspan=3) # Uncomment this line to display console messages
 
     def update_error_message(self, message):
         # Enable the text widget, clear any existing text, set the new message, and disable the widget
@@ -1004,7 +1002,7 @@ class MainMenu:
         # Check if the user directory exists
         self.user_directory = os.path.join("users/", username)
         if not os.path.exists(self.user_directory):
-            self.update_error_message("Username does not exist")
+            self.update_error_message("User does not exist")
             return
 
         # Set tracking files
@@ -1032,12 +1030,13 @@ class MainMenu:
                 food_app = FoodApp(root_food, macro_intake_app, micro_intake_app, progress_app)
 
                 # Minimize the intake windows on start
-                # root_macro_intake.iconify()
-                # root_micro_intake.iconify()
+                macro_intake_app.toggle_visibility()
+                micro_intake_app.toggle_visibility()
+                progress_app.toggle_visibility()
 
                 root_food.mainloop()
             else:
-                self.update_error_message("Wrong password")
+                self.update_error_message("Incorrect password")
 
     def create_user(self):
         username = self.username_entry.get()
@@ -1052,7 +1051,7 @@ class MainMenu:
 
 
         if os.path.exists(user_directory):
-            self.update_error_message("Username already exists")
+            self.update_error_message("User already exists")
             return
 
         os.makedirs(user_directory, exist_ok=True)
@@ -1060,7 +1059,7 @@ class MainMenu:
         # Write the password to the user file in the user directory
         with open(os.path.join(user_directory, f"{username}.txt"), "w") as file:
             file.write(password)
-            self.update_error_message(f"User: {username} created")
+            self.update_error_message(f"New User: {username} created")
 
 
         # Create the track.csv file in the user directory
