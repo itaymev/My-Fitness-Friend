@@ -24,7 +24,7 @@ class FoodApp:
         self.macro_intake_app = macro_intake_app
         self.micro_intake_app = micro_intake_app
         self.progress_app = progress_app
-        self.recorded_foods = []  # Define recorded_foods as an attribute
+        self.recorded_foods = []
 
 
         self.root.title("My Fitness Friend")
@@ -86,7 +86,7 @@ class FoodApp:
         self.monounsaturated_fats_entry.grid(row=12, column=1, padx=5, pady=5)
 
         # -- Entry Boxes -- Coloumn 2 --
-#,
+
         ttk.Label(root, text="Iron, Fe (mg):").grid(row=0, column=2, padx=5, pady=5)
         self.iron_entry = ttk.Entry(root, width=width)
         self.iron_entry.grid(row=0, column=3, padx=5, pady=5)
@@ -176,7 +176,6 @@ class FoodApp:
        
 
     def track_intake(self):
-        # Forward the command over
         self.macro_intake_app.track_intake()
         self.micro_intake_app.track_intake()
         self.progress_app.update_progress()
@@ -187,13 +186,13 @@ class FoodApp:
             original_serving_size = float(self.serving_size_entry.get())
 
             if original_serving_size < 0:
-                raise ValueError("Original serving size must not be negative.")
+                raise ValueError("Original serving size must not be negative")
 
             ratio = new_serving_size / original_serving_size
             self.serving_size_entry.delete(0, tk.END)
             self.serving_size_entry.insert(0, str(new_serving_size))
 
-            # List of entry widgets to be scaled
+            # Widgets to be scaled
             entries_to_scale = [
                 self.cals_entry, self.protein_entry, self.carbs_entry,
                 self.fiber_entry, self.sugars_entry, self.added_sugars_entry,
@@ -210,7 +209,7 @@ class FoodApp:
                 entry.delete(0, tk.END)
                 entry.insert(0, str(new_value))
 
-            return True  # Indicate success to on_save
+            return True  # Indicates success to on_save
 
         except ValueError as e:
             print("Error:", e)
@@ -267,7 +266,7 @@ class FoodApp:
         
         fat = fc.Fats(total_fats, saturated_fats, trans_fats, polyunsaturated_fats, monounsaturated_fats)
 
-        # Gretting data to construct micronutrient object
+        # Getting data to construct micronutrient object
         iron = float(self.iron_entry.get())
         zinc = float(self.zinc_entry.get())
         calcium = float(self.calcium_entry.get())
@@ -521,10 +520,8 @@ class MacroIntakeApp:
         fats_entry.grid(row=3, column=1, padx=5, pady=5)
         fats_entry.bind("<FocusOut>", lambda event: self.update_progress())
 
-
         # Button to update progress (no longer needed)
         # ttk.Button(root, text="Update Window", command=self.update_progress).grid(row=4, column=1, padx=5, pady=5)
-
 
         # Create a frame to contain the pie charts
         self.progress_frame = ttk.Frame(root)
